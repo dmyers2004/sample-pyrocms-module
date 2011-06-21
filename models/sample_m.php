@@ -10,28 +10,37 @@
 class Sample_m extends MY_Model {
 
 	public function __construct()
-	{
+	{		
 		parent::__construct();
+		
+		/**
+		 * If the sample module's table was named "samples"
+		 * then MY_Model would find it automatically. Since
+		 * I named it "sample" then we just set the name here.
+		 */
+		$this->_table = 'sample';
 	}
 
-	//get all items
-	public function get_items()
+	//get all items in an array for Tags
+	public function get_array($limit, $offset)
 	{
 		return $this->db
-					->order_by('name', 'asc')
-					->get('sample_items')
-					->result();
+					->order_by('name')
+					->limit($limit)
+					->offset($offset)
+					->get('sample')
+					->result_array();
 	}
 	
 	//create a new item
-	public function create_item($input)
+	public function create($input)
 	{
 		$to_insert = array(
 			'name' => $input['name'],
 			'slug' => $this->_check_slug($input['slug'])
 		);
 
-		return $this->db->insert('sample_items', $to_insert);
+		return $this->db->insert('sample', $to_insert);
 	}
 
 	//make sure the slug is valid

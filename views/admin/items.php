@@ -1,4 +1,4 @@
-<?php echo form_open('admin/sample/delete_item');?>
+<?php echo form_open('admin/sample/delete');?>
 
 <?php if (!empty($items)): ?>
 	<h3><?php echo lang('sample.item_list'); ?></h3>
@@ -29,15 +29,17 @@
 				<td>
 					<?php echo
 					anchor('sample', 	lang('sample.view'), 'target="_blank"') 	. ' | ' .
-					anchor('admin/sample/edit_item/'		. $item->id, 	lang('sample.edit')) 					. ' | ' .
-					anchor('admin/sample/delete_item/' 	. $item->id, 	lang('sample.delete'), array('class'=>'confirm')); ?>
+					anchor('admin/sample/edit/'		. $item->id, 	lang('sample.edit')) 					. ' | ' .
+					anchor('admin/sample/delete/' 	. $item->id, 	lang('sample.delete'), array('class'=>'confirm')); ?>
 				</td>
 			</tr>
 			<?php endforeach; ?>
 		</tbody>
 	</table>
-	<?php $this->load->view('admin/partials/buttons', array('buttons' => array('delete'))); ?>
-
+	<div class="buttons">
+		<?php $this->load->view('admin/partials/buttons', array('buttons' => array('delete'))); ?>
+	</div>
+	
 <?php else: ?>
 	<div class="blank-slate">
 		<img src="<?php echo site_url('addons/modules/sample/img/album.png') ?>" />

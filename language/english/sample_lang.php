@@ -5,7 +5,7 @@ $lang['sample.error']			=	'It didn\'t work';
 $lang['sample.no_items']		=	'No Items';
 
 //page titles
-$lang['sample.new_item']		=	'Create Item';
+$lang['sample.create']			=	'Create Item';
 
 //labels
 $lang['sample.name']			=	'Name';
@@ -19,5 +19,4 @@ $lang['sample.delete']			=	'Delete';
 //buttons
 $lang['sample.custom_button']	=	'Custom Button';
 $lang['sample.items']			=	'Items';
-$lang['sample.create_item']		=	'Create Item';
 ?>

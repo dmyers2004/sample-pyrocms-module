@@ -24,15 +24,16 @@ class Admin extends Admin_Controller
 			array(
 				'field' => 'name',
 				'label' => 'Name',
-				'rules' => 'trim|max_length[255]|required'
+				'rules' => 'trim|max_length[100]|required'
 			),
 			array(
 				'field' => 'slug',
 				'label' => 'Slug',
-				'rules' => 'trim|max_length[255]|required'
+				'rules' => 'trim|max_length[100]|required'
 			)
 		);
 
+		// We'll set the partials and metadata here since they're used everywhere
 		$this->template->set_partial('shortcuts', 'admin/partials/shortcuts')
 						->append_metadata(js('admin.js', 'sample'))
 						->append_metadata(css('admin.css', 'sample'));
@@ -43,38 +44,90 @@ class Admin extends Admin_Controller
 	 */
 	public function index()
 	{
-		$items = $this->sample_m->get_items();
+		// here we use MY_Model's get_all() method to fetch everything
+		$items = $this->sample_m->get_all();
 
-		// Load the view
+		// Build the view with sample/views/admin/items.php
 		$this->data->items =& $items;
 		$this->template->title($this->module_details['name'])
 						->build('admin/items', $this->data);
 	}
 
-	public function create_item()
+	public function create()
 	{
-		// Set the validation rules
+		// Set the validation rules from the array above
 		$this->form_validation->set_rules($this->item_validation_rules);
 
+		// check if the form validation passed
 		if($this->form_validation->run())
 		{
-			// Create the item
-			if($this->sample_m->create_item($_POST))
+			// See if the model can create the record
+			if($this->sample_m->create($_POST))
 			{
 				// All good...
 				$this->session->set_flashdata('success', lang('sample.success'));
 				redirect('admin/sample');
 			}
-			// Something went wrong..
+			// Something went wrong. Show them an error
 			else
 			{
 				$this->session->set_flashdata('error', lang('sample.error'));
-				redirect('admin/sample/create_item');
+				redirect('admin/sample/create');
 			}
 		}
 
-		// Load the view
+		// Build the view using sample/views/admin/form.php
 		$this->template->title($this->module_details['name'], lang('sample.new_item'))
-						->build('admin/create_item', $this->data);
+						->build('admin/form', $this->data);
+	}
+	
+	public function edit($id = 0)
+	{
+		$this->data = $this->sample_m->get($id);
+
+		// Set the validation rules from the array above
+		$this->form_validation->set_rules($this->item_validation_rules);
+
+		// check if the form validation passed
+		if($this->form_validation->run())
+		{
+			// get rid of the btnAction item that tells us which button was clicked.
+			// If we don't unset it MY_Model will try to insert it
+			unset($_POST['btnAction']);
+			
+			// See if the model can create the record
+			if($this->sample_m->update($id, $_POST))
+			{
+				// All good...
+				$this->session->set_flashdata('success', lang('sample.success'));
+				redirect('admin/sample');
+			}
+			// Something went wrong. Show them an error
+			else
+			{
+				$this->session->set_flashdata('error', lang('sample.error'));
+				redirect('admin/sample/create');
+			}
+		}
+
+		// Build the view using sample/views/admin/form.php
+		$this->template->title($this->module_details['name'], lang('sample.edit'))
+						->build('admin/form', $this->data);
+	}
+	
+	public function delete($id = 0)
+	{
+		// make sure the button was clicked and that there is an array of ids
+		if (isset($_POST['btnAction']) AND is_array($_POST['action_to']))
+		{
+			// pass the ids and let MY_Model delete the items
+			$this->sample_m->delete_many($this->input->post('action_to'));
+		}
+		elseif (is_numeric($id))
+		{
+			// they just clicked the link so we'll delete that one
+			$this->sample_m->delete($id);
+		}
+		redirect('admin/sample');
 	}
 }

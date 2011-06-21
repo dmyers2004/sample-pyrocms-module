@@ -21,18 +21,24 @@ class Module_Sample extends Module {
 
 	public function install()
 	{
-		$this->dbforge->drop_table('sample_items');
-		$this->db->delete('settings', array('module' => 'Sample'));
-		
-		$sample_items = "
-			CREATE TABLE `sample_items` (
-			  `id` int(11) NOT NULL AUTO_INCREMENT,
-			  `name` varchar(255) NOT NULL,
-			  `slug` varchar(255) NOT NULL,
-			  PRIMARY KEY (`id`),
-			  UNIQUE KEY `slug` (`slug`)
-			) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-		";
+		$this->dbforge->drop_table('sample');
+		$this->db->delete('settings', array('module' => 'sample'));
+				
+		$sample = array(
+                        'id' => array(
+									  'type' => 'INT',
+									  'constraint' => '11',
+									  'auto_increment' => TRUE
+									  ),
+						'name' => array(
+										'type' => 'VARCHAR',
+										'constraint' => '100'
+										),
+						'slug' => array(
+										'type' => 'VARCHAR',
+										'constraint' => '100'
+										)
+						);
 		
 		$sample_setting = array(
 			'slug' => 'sample_setting',
@@ -44,12 +50,15 @@ class Module_Sample extends Module {
 			'`options`' => '1=Yes|0=No',
 			'is_required' => 1,
 			'is_gui' => 1,
-			'module' => 'Sample'
+			'module' => 'sample'
 		);
+		
+		$this->dbforge->add_field($sample);
+		$this->dbforge->add_key('id', TRUE);
 
-		if($this->db->query($sample_items) &&
-		   $this->db->insert('settings', $sample_setting) &&
-		   is_dir('uploads/sample') OR mkdir('uploads/sample',0777,TRUE))
+		if($this->dbforge->create_table('sample') AND
+		   $this->db->insert('settings', $sample_setting) AND
+		   is_dir('uploads/sample') OR @mkdir('uploads/sample',0777,TRUE))
 		{
 			return TRUE;
 		}
@@ -57,8 +66,8 @@ class Module_Sample extends Module {
 
 	public function uninstall()
 	{
-		$this->dbforge->drop_table('sample_items');
-		$this->db->delete('settings', array('module' => 'Sample'));
+		$this->dbforge->drop_table('sample');
+		$this->db->delete('settings', array('module' => 'sample'));
 		{
 			return TRUE;
 		}

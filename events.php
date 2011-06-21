@@ -2,16 +2,16 @@
 /**
  * Sample Events Class
  * 
- * @package		PyroCMS
- * @subpackage	Sample Module
- * @category	events
- * @author		Jerel Unruh - PyroCMS Dev Team
- * @website		http://unruhdesigns.com
+ * @package        PyroCMS
+ * @subpackage    Sample Module
+ * @category    events
+ * @author        Jerel Unruh - PyroCMS Dev Team
+ * @website        http://unruhdesigns.com
  */
 class Events_Sample {
     
-	protected $ci;
-	
+    protected $ci;
+    
     public function __construct()
     {
         $this->ci =& get_instance();
@@ -23,8 +23,8 @@ class Events_Sample {
     public function run()
     {
         $this->ci->load->model('sample/sample_m');
-		
-		$this->ci->sample_m->get_all();
+        
+        $this->ci->sample_m->get_all();
     }
     
 }

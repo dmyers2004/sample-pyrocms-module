@@ -25,13 +25,32 @@ class Sample extends Public_Controller
 	/**
 	 * All items
 	 */
-	public function index($offset = '')
+	public function index($offset = 0)
 	{
-		$this->data->items	= $this->sample_m->get_items($limit = 10, $offset);			
+		// set the pagination limit
+		$limit = 5;
+		
+		// instead of using MY_Models get_all() we use our own get_array()
+		// because Tags cannot handle an object
+		$this->data->items	= $this->sample_m
+			->get_array($limit, $offset);
+			
+		// we'll do a quick check here so we can tell tags whether there is data or not
+		if ( ! $this->data->items) $this->data->empty = TRUE;
 
-		$this->data->pagination = create_pagination('sample', count($this->sample_m->get_items()), $limit);
+		// we're using the pagination helper to do the pagination for us
+		$this->data->pagination = create_pagination('sample/index', $this->sample_m->count_all(), $limit);
 
+		/**
+		 * You'll notice that we are setting the "pagination" partial. An alternative is
+		 * to do $this->load->view('admin/partials/pagination'); in the view but that
+		 * requires php. By setting the partial here and displaying it with
+		 * {pyro:template:partial name="pagination"} in index.php we can get rid of php.
+		 * The only requirement is that the pagination data is available to the partial
+		 * so we set $this->data->pagination in this controller and it gets passed when we build.
+		 */
 		$this->template->title($this->module_details['name'], 'the rest of the page title')
+						->set_partial('pagination', 'admin/partials/pagination')
 						->build('index', $this->data);
 	}
 }
